@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Spice Grinder Scan
-        uses: spice-labs-inc/actions/spice_grinder_scan@main
+        uses: spice-labs-inc/grinder-scan-action@main
         with:
           file_path: "./deploy"
           spice_pass: ${{ secrets.SPICE_PASS }}
