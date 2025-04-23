@@ -1,0 +1,26 @@
+name: Spice Grinder Scan & Upload
+
+description: Runs Spice Grinder scan, then uploads results
+
+inputs:
+  file_path:
+    description: Path to local files to scan
+    required: false
+    default: .
+  spice_pass: 
+    description: Spice Pass
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Spice Grinder
+      shell: bash
+      run: |
+        set -x
+        docker run \
+          -v "${{ inputs.file_path }}:/input:ro" \
+          -e SPICE_PASS=${{ inputs.spice_pass }} \
+          "spicelabs/grinder:latest" \
+            --input /input
+
