@@ -28,14 +28,10 @@ on:
 
 jobs:
   scan-and-upload:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    uses: spice-labs-inc/action-grinder-scan/.github/workflows/grinder-scan.yml@main
+    with:
+      file_path: "./deploy"
+    secrets:
+      SPICE_PASS: ${{ secrets.SPICE_PASS }}
 
-      - name: Run Spice Grinder Scan
-        uses: spice-labs-inc/action-grinder-scan@main
-        with:
-          file_path: "./deploy"
-          spice_pass: ${{ secrets.SPICE_PASS }}
 ```
