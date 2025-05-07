@@ -28,7 +28,7 @@ on:
 
 jobs:
   scan-and-upload:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
