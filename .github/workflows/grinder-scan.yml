@@ -20,7 +20,16 @@ runs:
         set -x
         docker run \
           -v "${{ inputs.file_path }}:/input:ro" \
-          -e SPICE_PASS=${{ inputs.spice_pass }} \
-          "spicelabs/grinder:latest" \
+          -e SPICE_PASS="${{ inputs.spice_pass }}" \
+          spicelabs/grinder:latest \
             --input /input
+
+    - name: Upload SBOM + OCI Tar (if present)
+      uses: actions/upload-artifact@v4
+      with:
+        name: grinder-artifacts
+        path: |
+          /tmp/sbom.spdx.json
+          ${{ inputs.file_path }}/*.oci.tar
+        if-no-files-found: ignore
 
