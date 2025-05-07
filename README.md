@@ -1,37 +1,40 @@
-### Action for Spice Grinder Scan
+# action-grinder-scan
 
-A reusable GitHub Action to scan artifacts with [Spice Grinder](https://github.com/spice-labs-inc/grinder) and upload the results.
-
-This action supports:
-- Scanning local files
-- Running Spice Grinder inside a secure container
-- Uploading results using your Spice Pass
+A composite GitHub Action that runs the Spice Grinder scan against a directory of built files (e.g. Rust binaries), then uploads the resulting SBOM and OCI archive if present.
 
 ---
 
-### Inputs
+## Features
 
-| Name              | Description                                                                 | Required | Default |
-|-------------------|-----------------------------------------------------------------------------|----------|---------|
-| `file_path`       | Path to local files to scan                                                 | true     | `""`    |
-| `spice_pass`      | Spice pass for uploading results.  Get this from the Spice Labs Dashboard.  | true     | —       |
+- Scans a directory using `spicelabs/grinder:latest` Docker image
+- Exports SPDX SBOM (`/tmp/sbom.spdx.json`)
+- Uploads `.oci.tar` image files if present in scan target directory
+- Compatible with any containerized build output
 
 ---
 
-### Example Usage
+## Usage
 
 ```yaml
-name: Scan with Spice Grinder
-
-on:
-  workflow_dispatch:
-
-jobs:
-  scan-and-upload:
-    uses: spice-labs-inc/action-grinder-scan/.github/workflows/grinder-scan.yml@main
-    with:
-      file_path: "./deploy"
-    secrets:
-      SPICE_PASS: ${{ secrets.SPICE_PASS }}
-
+- name: Run Spice Grinder Scan
+  uses: spice-labs-inc/action-grinder-scan@main
+  with:
+    file_path: target/release/     # Optional, defaults to '.'
+    spice_pass: ${{ secrets.GRINDER_JWT }}
 ```
+## Inputs
+| Name         | Required | Default | Description                                   |
+| ------------ | -------- | ------- | --------------------------------------------- |
+| `file_path`  | No       | `.`     | Path to local files to scan (read-only mount) |
+| `spice_pass` | Yes      | —       | Secret passphrase for running grinder scan    |
+
+## Output
+This action uploads an artifact named grinder-artifacts that may include:
+  *  `/tmp/sbom.spdx.json`
+  *  `*.oci.tar` files from the scan target path
+
+Set your downstream workflows to retrieve this as needed.
+
+## Requirements
+  *  Docker must be available in the GitHub Actions runner
+  *  spicelabs/grinder:latest image must be publicly accessible
