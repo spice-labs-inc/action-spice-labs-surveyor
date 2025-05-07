@@ -7,7 +7,7 @@ inputs:
     description: Path to local files to scan
     required: false
     default: .
-  spice_pass: 
+  spice_pass:
     description: Spice Pass
     required: true
 
@@ -22,7 +22,7 @@ runs:
           -v "${{ inputs.file_path }}:/input:ro" \
           -e SPICE_PASS="${{ inputs.spice_pass }}" \
           spicelabs/grinder:latest \
-            --input /input
+          --input /input
 
     - name: Upload SBOM + OCI Tar (if present)
       uses: actions/upload-artifact@v4
@@ -32,4 +32,3 @@ runs:
           /tmp/sbom.spdx.json
           ${{ inputs.file_path }}/*.oci.tar
         if-no-files-found: ignore
-
