@@ -1,40 +1,47 @@
-# action-grinder-scan
+# 🔥 Grinder Scan GitHub Action
 
-A composite GitHub Action that runs the Spice Grinder scan against a directory of built files (e.g. Rust binaries), then uploads the resulting SBOM and OCI archive if present.
+This composite GitHub Action runs the [Spice Grinder](https://github.com/spice-labs/grinder) container scanner against `.oci.tar` images and uploads any resulting SBOM and OCI artifacts.
 
----
+## ✅ Features
 
-## Features
+- Runs `spicelabs/grinder:latest` scan in a Docker container
+- Uploads:
+  - SBOM: `/tmp/sbom.spdx.json` (if found)
+  - OCI tarballs from the specified directory (if found)
+- Will **not fail** if files are missing — it will warn instead
 
-- Scans a directory using `spicelabs/grinder:latest` Docker image
-- Exports SPDX SBOM (`/tmp/sbom.spdx.json`)
-- Uploads `.oci.tar` image files if present in scan target directory
-- Compatible with any containerized build output
-
----
-
-## Usage
+## 📦 Usage
 
 ```yaml
-- name: Run Spice Grinder Scan
+- name: Run Grinder Scan
   uses: spice-labs-inc/action-grinder-scan@main
   with:
-    file_path: target/release/     # Optional, defaults to '.'
     spice_pass: ${{ secrets.GRINDER_JWT }}
+    file_path: ./target/release
 ```
+
 ## Inputs
-| Name         | Required | Default | Description                                   |
-| ------------ | -------- | ------- | --------------------------------------------- |
-| `file_path`  | No       | `.`     | Path to local files to scan (read-only mount) |
-| `spice_pass` | Yes      | —       | Secret passphrase for running grinder scan    |
+| Name         | Required | Default | Description                                     |
+| ------------ | -------- | ------- | ----------------------------------------------- |
+| `spice_pass` | ✅ Yes    | –       | Secret used to authenticate the Grinder scanner |
+| `file_path`  | ❌ No     | `.`     | Directory where `.oci.tar` files are located    |
 
-## Output
-This action uploads an artifact named grinder-artifacts that may include:
-  *  `/tmp/sbom.spdx.json`
-  *  `*.oci.tar` files from the scan target path
+## 📤 Upload Behavior
+The action will upload:
+ - SBOM file as artifact named sbom (if found at /tmp/sbom.spdx.json)
+ - OCI images as artifact named oci-images (if *.oci.tar files are found in file_path)
+If no files are found, uploads are skipped with a warning — the job will not fail.
 
-Set your downstream workflows to retrieve this as needed.
+## 🐳 Example: Save Docker Image for Scanning
+Ensure your Docker image is saved as .oci.tar in the correct path:
+```bash
+mkdir -p target/release
+docker save ghcr.io/your-org/your-image:latest > target/release/your-image.oci.tar
+```
 
-## Requirements
-  *  Docker must be available in the GitHub Actions runner
-  *  spicelabs/grinder:latest image must be publicly accessible
+## 🔒 Permissions
+Ensure your calling workflow includes:
+```yaml
+permissions:
+  contents: write
+```
