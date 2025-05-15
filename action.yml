@@ -18,14 +18,12 @@ runs:
       shell: bash
       run: |
         set -euxo pipefail
-
         echo "🔍 Running Grinder Scan..."
         docker run \
           -v "${{ inputs.file_path }}:/input:ro" \
           -e SPICE_PASS="${{ inputs.spice_pass }}" \
           spicelabs/grinder:latest \
           --input /input
-
         echo "✅ Scan complete"
 
     - name: Check for Generated Files
@@ -48,11 +46,16 @@ runs:
           echo "⚠ No .oci.tar files found in ${{ inputs.file_path }}"
         fi
 
-    - name: Upload SBOM + OCI Tar (if present)
+    - name: Upload SBOM (if present)
       uses: actions/upload-artifact@v4
       with:
-        name: grinder-artifacts
-        path: |
-          /tmp/sbom.spdx.json
-          ${{ inputs.file_path }}/*.oci.tar
+        name: sbom
+        path: /tmp/sbom.spdx.json
+        if-no-files-found: warn
+
+    - name: Upload OCI Tar(s) (if present)
+      uses: actions/upload-artifact@v4
+      with:
+        name: oci-images
+        path: ${{ inputs.file_path }}/*.oci.tar
         if-no-files-found: warn
