@@ -20,7 +20,7 @@ A composite GitHub Action that runs the Spice Labs CLI scan against a directory 
   uses: spice-labs-inc/action-spice-labs-cli-scan@main
   with:
     file_path: target/release/     # Optional, defaults to '.'
-    spice_pass: ${{ secrets.SPICE-LABS-CLI_JWT }}
+    spice_pass: ${{ secrets.SPICE_PASS_JWT }}
 ```
 ## Inputs
 | Name         | Required | Default | Description                                   |
