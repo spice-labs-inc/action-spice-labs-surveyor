@@ -1,6 +1,6 @@
-name: Spice Grinder Scan & Upload
+name: Spice Labs, Inc. Scan & Upload
 
-description: Runs Spice Grinder scan, then uploads results
+description: Runs The Spice Labs CLI scan, then uploads results.
 
 inputs:
   file_path:
@@ -14,16 +14,16 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run Spice Grinder
+    - name: Run The Spice Labs CLI
       shell: bash
       run: |
         set -euxo pipefail
 
-        echo "🔍 Running Grinder Scan..."
+        echo "🔍 Running The Spice Labs CLI Scan..."
         docker run \
           -v "${{ inputs.file_path }}:/input:ro" \
           -e SPICE_PASS="${{ inputs.spice_pass }}" \
-          spicelabs/grinder:latest \
+          spicelabs/spice-labs-cli:latest \
           --input /input
 
         echo "✅ Scan complete"
@@ -51,7 +51,7 @@ runs:
     - name: Upload SBOM + OCI Tar (if present)
       uses: actions/upload-artifact@v4
       with:
-        name: grinder-artifacts
+        name: spice-labs-cli-artifacts
         path: |
           /tmp/sbom.spdx.json
           ${{ inputs.file_path }}/*.oci.tar
