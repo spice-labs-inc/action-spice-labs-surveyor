@@ -17,13 +17,13 @@ runs:
     - name: Run The Spice Labs CLI
       shell: bash
       run: |
-        set -euxo pipefail
-
         echo "🔍 Running The Spice Labs CLI Scan..."
+
         docker run \
           -v "${{ inputs.file_path }}:/input:ro" \
           -e SPICE_PASS="${{ inputs.spice_pass }}" \
           spicelabs/spice-labs-cli:latest \
+          --verbose \
           --input /input
 
         echo "✅ Scan complete"
