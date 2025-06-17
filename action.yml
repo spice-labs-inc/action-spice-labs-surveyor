@@ -20,10 +20,10 @@ runs:
         echo "🔍 Running The Spice Labs CLI Scan & Upload..."
 
         docker run \
-          -v "${{ inputs.file_path }}:/input:ro" \
+          -v "${{ inputs.file_path }}:/mnt/input:ro" \
           -e SPICE_PASS="${{ inputs.spice_pass }}" \
           spicelabs/spice-labs-cli:latest \
           --verbose \
-          --input /input
+          --input /mnt/input
 
         echo "✅ ADG creation & upload complete"
