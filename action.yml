@@ -14,45 +14,16 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run The Spice Labs CLI
+    - name: Build ADG
       shell: bash
       run: |
-        set -euxo pipefail
+        echo "🔍 Running The Spice Labs CLI Scan & Upload..."
 
-        echo "🔍 Running The Spice Labs CLI Scan..."
         docker run \
-          -v "${{ inputs.file_path }}:/input:ro" \
+          -v "${{ inputs.file_path }}:/mnt/input:ro" \
           -e SPICE_PASS="${{ inputs.spice_pass }}" \
           spicelabs/spice-labs-cli:latest \
-          --input /input
+          --verbose \
+          --input /mnt/input
 
-        echo "✅ Scan complete"
-
-    - name: Check for Generated Files
-      shell: bash
-      run: |
-        echo "📁 Checking if expected files exist..."
-        SBOM="/tmp/sbom.spdx.json"
-        ARTIFACTS=$(find "${{ inputs.file_path }}" -maxdepth 1 -name '*.oci.tar' 2>/dev/null || true)
-
-        if [[ -f "$SBOM" ]]; then
-          echo "✔ Found SBOM: $SBOM"
-        else
-          echo "⚠ No SBOM found at $SBOM"
-        fi
-
-        if [[ -n "$ARTIFACTS" ]]; then
-          echo "✔ Found OCI tar(s):"
-          echo "$ARTIFACTS"
-        else
-          echo "⚠ No .oci.tar files found in ${{ inputs.file_path }}"
-        fi
-
-    - name: Upload SBOM + OCI Tar (if present)
-      uses: actions/upload-artifact@v4
-      with:
-        name: spice-labs-cli-artifacts
-        path: |
-          /tmp/sbom.spdx.json
-          ${{ inputs.file_path }}/*.oci.tar
-        if-no-files-found: warn
+        echo "✅ ADG creation & upload complete"
