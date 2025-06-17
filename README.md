@@ -2,13 +2,14 @@
 
 A composite GitHub Action that runs the Spice Labs CLI to create an artifact dependency
 graph from a directory of built files (e.g. Rust binaries, OCI-layout unpacked docker
-continers, jar files, etc), then uploads the resulting ADG to the Spice Labs servers
+continers, jar files, etc), then uploads the resulting ADG to the Spice Labs servers.
 
 ---
 
 ## Features
 
-- Scans a directory using `spicelabs/spice-labs-cli` container and creates an artifact dependency graph
+- Scans a directory using `spicelabs/spice-labs-cli` container and creates an artifact
+  dependency graph.
 
 ---
 

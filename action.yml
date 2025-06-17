@@ -17,7 +17,7 @@ runs:
     - name: Build ADG
       shell: bash
       run: |
-        echo "🔍 Running The Spice Labs CLI Scan..."
+        echo "🔍 Running The Spice Labs CLI Scan & Upload..."
 
         docker run \
           -v "${{ inputs.file_path }}:/input:ro" \
@@ -26,4 +26,4 @@ runs:
           --verbose \
           --input /input
 
-        echo "✅ ADG creation complete"
+        echo "✅ ADG creation & upload complete"
