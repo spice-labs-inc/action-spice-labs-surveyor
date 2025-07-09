@@ -23,7 +23,7 @@ runs:
           -v "${{ inputs.file_path }}:/mnt/input:ro" \
           -e SPICE_PASS="${{ inputs.spice_pass }}" \
           spicelabs/spice-labs-cli:latest \
-          --verbose \
+          --log-level all \
           --input /mnt/input
 
         echo "✅ ADG creation & upload complete"
