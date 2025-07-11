@@ -21,6 +21,7 @@ continers, jar files, etc), then uploads the resulting ADG to the Spice Labs ser
   with:
     file_path: target/release/ # Optional, defaults to '.'
     spice_pass: ${{ secrets.SPICE_PASS }}
+    tag: 'my-scan-tag' # Optional
 ```
 
 ## Inputs
@@ -29,6 +30,7 @@ continers, jar files, etc), then uploads the resulting ADG to the Spice Labs ser
 | ------------ | -------- | ------- | ---------------------------------------------- |
 | `file_path`  | No       | `.`     | Path to local files to scan (used read-only).  |
 | `spice_pass` | Yes      |         | Spice Pass (JWT) from your Spice Labs project. |
+| `tag`        | No       |         | Tag for the scan.                              |
 
 ## Requirements
 
