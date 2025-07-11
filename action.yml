@@ -10,6 +10,9 @@ inputs:
   spice_pass:
     description: Spice Pass
     required: true
+  tag:
+    description: Tag for the scan
+    required: false
 
 runs:
   using: "composite"
@@ -24,6 +27,7 @@ runs:
           -e SPICE_PASS="${{ inputs.spice_pass }}" \
           spicelabs/spice-labs-cli:latest \
           --log-level all \
-          --input /mnt/input
+          --input /mnt/input \
+          --tag "${{ inputs.tag }}"
 
         echo "✅ ADG creation & upload complete"
