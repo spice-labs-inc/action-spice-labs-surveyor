@@ -30,7 +30,7 @@ continers, jar files, etc), then uploads the resulting ADG to the Spice Labs ser
 | ------------ | -------- | ------- | ---------------------------------------------- |
 | `file_path`  | No       | `.`     | Path to local files to scan (used read-only).  |
 | `spice_pass` | Yes      |         | Spice Pass (JWT) from your Spice Labs project. |
-| `tag`        | No       |         | Tag for the scan.                              |
+| `tag`        | Yes      |         | Tag for the scan.                              |
 
 ## Requirements
 
