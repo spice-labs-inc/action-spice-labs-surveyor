@@ -1,22 +1,21 @@
-name: Spice Labs, Inc. Scan & Upload
-
-description: Runs The Spice Labs CLI scan, then uploads results.
+name: "Spice Labs CLI Scan & Upload"
+description: "Runs The Spice Labs CLI to index files and upload results."
 
 inputs:
   file_path:
-    description: Path to local files to scan
+    description: "Path to local files to scan"
     required: false
-    default: .
+    default: "."
   spice_pass:
-    description: Spice Pass
+    description: "Spice Pass token"
     required: true
   tag:
-    description: Tag for the scan
+    description: "Tag to associate with the scan"
     required: true
   cli_image:
-    description: Docker image for the CLI
+    description: "Docker image for the CLI"
     required: false
-    default: spicelabs/spice-labs-cli:latest
+    default: "spicelabs/spice-labs-cli:latest"
 
 runs:
   using: "composite"
@@ -26,7 +25,7 @@ runs:
       run: |
         set -euo pipefail
 
-        echo "🔍 Running The Spice Labs CLI Scan & Upload..."
+        echo "Starting The Spice Labs CLI scan and upload"
 
         docker run \
           -v "${{ inputs.file_path }}:/mnt/input:ro" \
@@ -36,4 +35,4 @@ runs:
           --input /mnt/input \
           --tag "${{ inputs.tag }}"
 
-        echo "✅ ADG creation & upload complete"
+        echo "Scan and upload complete"
