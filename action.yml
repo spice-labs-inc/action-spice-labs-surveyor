@@ -26,8 +26,8 @@ runs:
           -v "${{ inputs.file_path }}:/mnt/input:ro" \
           -e SPICE_PASS="${{ secrets.SPICE_PASS }}" \
           spicelabs/spice-labs-cli:0.2 \
-          --log-level all \
-          --input /mnt/input \
-          --tag "${{ inputs.tag }}"
+          --log-level=all \
+          --input=/mnt/input \
+          --tag="${{ inputs.tag }}"
 
         echo "✅ ADG creation & upload complete"
