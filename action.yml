@@ -13,21 +13,27 @@ inputs:
   tag:
     description: Tag for the scan
     required: true
+  cli_image:
+    description: Docker image for the CLI
+    required: false
+    default: spicelabs/spice-labs-cli:latest
 
 runs:
   using: "composite"
   steps:
-    - name: Build ADG
+    - name: Run Spice Labs CLI Scan & Upload
       shell: bash
       run: |
+        set -euo pipefail
+
         echo "🔍 Running The Spice Labs CLI Scan & Upload..."
 
         docker run \
           -v "${{ inputs.file_path }}:/mnt/input:ro" \
-          -e SPICE_PASS="${{ secrets.SPICE_PASS }}" \
-          spicelabs/spice-labs-cli:0.2 \
-          --log-level=all \
-          --input=/mnt/input \
-          --tag="${{ inputs.tag }}"
+          -e SPICE_PASS="${{ inputs.spice_pass }}" \
+          "${{ inputs.cli_image }}" \
+          --log-level all \
+          --input /mnt/input \
+          --tag "${{ inputs.tag }}"
 
         echo "✅ ADG creation & upload complete"
