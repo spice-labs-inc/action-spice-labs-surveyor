@@ -12,7 +12,7 @@ inputs:
     required: true
   tag:
     description: Tag for the scan
-    required: false
+    required: true
 
 runs:
   using: "composite"
