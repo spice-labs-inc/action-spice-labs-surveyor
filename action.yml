@@ -1,4 +1,4 @@
-name: "Spice Labs Survey"
+name: "Spice Labs Surveyor"
 description: "Runs The Spice Labs Surveyor to survey files and upload results."
 
 inputs:
