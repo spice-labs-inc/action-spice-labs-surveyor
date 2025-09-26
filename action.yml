@@ -1,16 +1,16 @@
-name: "Spice Labs CLI Scan & Upload"
-description: "Runs The Spice Labs CLI to index files and upload results."
+name: "Spice Labs Surveyor"
+description: "Runs The Spice Labs Surveyor to survey files and upload results."
 
 inputs:
   file_path:
-    description: "Path to local files to scan"
+    description: "Path to local files to survey"
     required: false
     default: "."
   spice_pass:
     description: "Spice Pass token"
     required: true
   tag:
-    description: "Tag to associate with the scan"
+    description: "Tag to associate with the survey"
     required: true
   cli_image:
     description: "Docker image for the CLI"
@@ -20,12 +20,12 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run Spice Labs CLI Scan & Upload
+    - name: Run Spice Labs Surveyor
       shell: bash
       run: |
         set -euo pipefail
 
-        echo "Starting The Spice Labs CLI scan and upload"
+        echo "Starting The Spice Labs Surveyor"
 
         docker run \
           -v "${{ inputs.file_path }}:/mnt/input:ro" \
@@ -35,4 +35,4 @@ runs:
           --input /mnt/input \
           --tag "${{ inputs.tag }}"
 
-        echo "Scan and upload complete"
+        echo "Survey and Upload complete"
