@@ -17,7 +17,7 @@ A composite GitHub Action that runs the Spice Labs Surveyor CLI to create an Art
 - name: Build ADG
   uses: spice-labs-inc/action-spice-labs-surveyor@v3
   with:
-    file_path: target/release/            # Optional; defaults to '.'
+    input: target/release/            # Optional; defaults to '.'
     spice_pass: ${{ secrets.SPICE_PASS }} # Required
     tag: 'my-survey-tag'                  # Required
 
@@ -30,10 +30,11 @@ A composite GitHub Action that runs the Spice Labs Surveyor CLI to create an Art
 - name: Build ADG (pinned CLI image)
   uses: spice-labs-inc/action-spice-labs-surveyor@v3
   with:
-    file_path: ${{ github.workspace }}/target
+    input: ${{ github.workspace }}/target
     spice_pass: ${{ secrets.SPICE_PASS }}
     tag: wasabi
-    cli_image: spicelabs/spice-labs-cli:latest
+    cli_image: spicelabs/spice-labs-cli
+    cli_image_tag: 1.2.3
 ```
 
 ---
@@ -41,10 +42,11 @@ A composite GitHub Action that runs the Spice Labs Surveyor CLI to create an Art
 ### Inputs
 | Name         | Required | Default                           | Description                                     |
 | ------------ | -------- | --------------------------------- | ----------------------------------------------- |
-| `file_path`  | No       | `.`                               | Path to local files to survey (mounted read-only) |
+| `input`      | No       | `.`                               | Path to local files to survey (mounted read-only) |
 | `spice_pass` | Yes      | *(none)*                          | Spice Pass (JWT) from your Spice Labs project   |
 | `tag`        | Yes      | *(none)*                          | Tag to associate with the survey         |
-| `cli_image`  | No       | `spicelabs/spice-labs-cli:latest` | Docker image to run the CLI                     |
+| `cli_image`  | No       | `spicelabs/spice-labs-cli`        | Docker image to run the CLI                     |
+| `cli_image_tag` | No    | `latest`                          | Tag of the Docker image to run the CLI          |
 
 ---
 

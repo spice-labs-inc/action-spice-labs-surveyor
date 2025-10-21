@@ -3,6 +3,10 @@ description: "Runs The Spice Labs Surveyor to survey files and upload results."
 
 inputs:
   file_path:
+    description: "Path to local files to survey (deprecated, use 'input' instead)"
+    required: false
+    default: "."
+  input:
     description: "Path to local files to survey"
     required: false
     default: "."
@@ -15,24 +19,28 @@ inputs:
   cli_image:
     description: "Docker image for the CLI"
     required: false
-    default: "spicelabs/spice-labs-cli:latest"
+    default: "spicelabs/spice-labs-cli"
+  cli_image_tag:
+    description: "Docker image tag for the CLI"
+    required: false
+    default: "latest"
 
 runs:
   using: "composite"
   steps:
-    - name: Run Spice Labs Surveyor
-      shell: bash
+    - name: Install Spice Labs Surveyor CLI
       run: |
-        set -euo pipefail
+        curl -sSLf https://install.spicelabs.io | bash
+    - name: Run Spice Labs Surveyor
+      run: |
+        export SPICE_PASS="${{ inputs.spice_pass }}"
+        export SPICE_IMAGE="${{ inputs.cli_image }}"
+        export SPICE_IMAGE_TAG="${{ inputs.cli_image_tag }}"
 
-        echo "Starting The Spice Labs Surveyor"
-
-        docker run \
-          -v "${{ inputs.file_path }}:/mnt/input:ro" \
-          -e SPICE_PASS="${{ inputs.spice_pass }}" \
-          "${{ inputs.cli_image }}" \
-          --log-level all \
-          --input /mnt/input \
-          --tag "${{ inputs.tag }}"
-
-        echo "Survey and Upload complete"
+        # Prefer 'input'; if empty, fall back to deprecated 'file_path'
+        INPUT_PATH="${{ inputs.input }}"
+        if [ -z "$INPUT_PATH" ]; then
+          INPUT_PATH="${{ inputs.file_path }}"
+        fi
+        
+        ~/.local/bin/spice --input="$INPUT_PATH" --tag="${{ inputs.tag }}" --log-level=all
