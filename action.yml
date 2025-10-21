@@ -29,9 +29,11 @@ runs:
   using: "composite"
   steps:
     - name: Install Spice Labs Surveyor CLI
+      shell: bash
       run: |
         curl -sSLf https://install.spicelabs.io | bash
     - name: Run Spice Labs Surveyor
+      shell: bash
       run: |
         export SPICE_PASS="${{ inputs.spice_pass }}"
         export SPICE_IMAGE="${{ inputs.cli_image }}"
@@ -44,3 +46,4 @@ runs:
         fi
         
         ~/.local/bin/spice --input="$INPUT_PATH" --tag="${{ inputs.tag }}" --log-level=all
+
