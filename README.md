@@ -17,7 +17,7 @@ A composite GitHub Action that runs the Spice Labs Surveyor CLI to create an Art
       - name: Index and Upload ADG
         uses: spice-labs-inc/action-spice-labs-surveyor@v4
         with:
-          spice_pass: "${{ secrets.SPICE_PASS }}"     # required
+          spice_pass: "./target"                      # required
           input: "${{ github.workspace }}"            # Optional; defaults to "."
           tag: "${{ github.event.repository.name }}"  # required
 
@@ -31,7 +31,7 @@ A composite GitHub Action that runs the Spice Labs Surveyor CLI to create an Art
         uses: spice-labs-inc/action-spice-labs-surveyor@v4
         with:
           spice_pass: "${{ secrets.SPICE_PASS }}"     # required
-          input: "${{ github.workspace }}"            # Optional; defaults to "."
+          input: "./target"                           # Optional; defaults to "."
           tag: "${{ github.event.repository.name }}"  # required
           cli_image: spicelabs/spice-labs-cli
           cli_image_tag: 1.2.3
