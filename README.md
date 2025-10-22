@@ -14,12 +14,12 @@ A composite GitHub Action that runs the Spice Labs Surveyor CLI to create an Art
 ### Usage
 
 ```yaml
-- name: Build ADG
-  uses: spice-labs-inc/action-spice-labs-surveyor@v3
-  with:
-    input: target/release/            # Optional; defaults to '.'
-    spice_pass: ${{ secrets.SPICE_PASS }} # Required
-    tag: 'my-survey-tag'                  # Required
+      - name: Index and Upload ADG
+        uses: spice-labs-inc/action-spice-labs-surveyor@v4
+        with:
+          spice_pass: "${{ secrets.SPICE_PASS }}"     # required
+          input: "${{ github.workspace }}"            # Optional; defaults to "."
+          tag: "${{ github.event.repository.name }}"  # required
 
 ```
 
@@ -27,14 +27,14 @@ A composite GitHub Action that runs the Spice Labs Surveyor CLI to create an Art
 
 ### Optional: pin or override the CLI image
 ```yaml
-- name: Build ADG (pinned CLI image)
-  uses: spice-labs-inc/action-spice-labs-surveyor@v3
-  with:
-    input: ${{ github.workspace }}/target
-    spice_pass: ${{ secrets.SPICE_PASS }}
-    tag: wasabi
-    cli_image: spicelabs/spice-labs-cli
-    cli_image_tag: 1.2.3
+      - name: Index and Upload ADG (pinned cli image)
+        uses: spice-labs-inc/action-spice-labs-surveyor@v4
+        with:
+          spice_pass: "${{ secrets.SPICE_PASS }}"     # required
+          input: "${{ github.workspace }}"            # Optional; defaults to "."
+          tag: "${{ github.event.repository.name }}"  # required
+          cli_image: spicelabs/spice-labs-cli
+          cli_image_tag: 1.2.3
 ```
 
 ---
