@@ -15,7 +15,7 @@ A composite GitHub Action that runs the Spice Labs Surveyor CLI to create an Art
 
 ```yaml
 - name: Build ADG
-  uses: spice-labs-inc/action-spice-labs-surveyor@v3
+  uses: spice-labs-inc/action-spice-labs-surveyor@v5
   with:
     subject: my-app                           # Required — label shown on the dashboard
     input: target/release/                    # Optional; defaults to '.'
@@ -28,7 +28,7 @@ A composite GitHub Action that runs the Spice Labs Surveyor CLI to create an Art
 
 ```yaml
 - name: Build ADG (pinned CLI image)
-  uses: spice-labs-inc/action-spice-labs-surveyor@v3
+  uses: spice-labs-inc/action-spice-labs-surveyor@v5
   with:
     subject: wasabi
     input: ${{ github.workspace }}/target
