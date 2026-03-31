@@ -17,36 +17,38 @@ A composite GitHub Action that runs the Spice Labs Surveyor CLI to create an Art
 - name: Build ADG
   uses: spice-labs-inc/action-spice-labs-surveyor@v3
   with:
-    input: target/release/            # Optional; defaults to '.'
-    spice_pass: ${{ secrets.SPICE_PASS }} # Required
-    tag: 'my-survey-tag'                  # Required
-
+    subject: my-app                           # Required — label shown on the dashboard
+    input: target/release/                    # Optional; defaults to '.'
+    spice_pass: ${{ secrets.SPICE_PASS }}     # Required
 ```
 
 ---
 
 ### Optional: pin or override the CLI image
+
 ```yaml
 - name: Build ADG (pinned CLI image)
   uses: spice-labs-inc/action-spice-labs-surveyor@v3
   with:
+    subject: wasabi
     input: ${{ github.workspace }}/target
     spice_pass: ${{ secrets.SPICE_PASS }}
-    tag: wasabi
     cli_image: spicelabs/spice-labs-cli
-    cli_image_tag: 1.2.3
+    cli_image_tag: 2.0.0
 ```
 
 ---
 
 ### Inputs
-| Name         | Required | Default                           | Description                                     |
-| ------------ | -------- | --------------------------------- | ----------------------------------------------- |
-| `input`      | No       | `.`                               | Path to local files to survey (mounted read-only) |
-| `spice_pass` | Yes      | *(none)*                          | Spice Pass (JWT) from your Spice Labs project   |
-| `tag`        | Yes      | *(none)*                          | Tag to associate with the survey         |
-| `cli_image`  | No       | `spicelabs/spice-labs-cli`        | Docker image to run the CLI                     |
-| `cli_image_tag` | No    | `latest`                          | Tag of the Docker image to run the CLI          |
+
+| Name | Required | Default | Description |
+|------|----------|---------|-------------|
+| `subject` | Yes | *(none)* | Label identifying the system being surveyed (shown on the dashboard) |
+| `input` | No | `.` | Path to local files to survey |
+| `spice_pass` | Yes | *(none)* | Spice Pass (JWT) from your Spice Labs project |
+| `cli_image` | No | `spicelabs/spice-labs-cli` | Docker image to run the CLI |
+| `cli_image_tag` | No | `latest` | Tag of the Docker image to run the CLI |
+| `log_level` | No | `info` | Log level: `debug` \| `info` \| `warn` \| `error` |
 
 ---
 
