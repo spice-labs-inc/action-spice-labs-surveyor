@@ -2,19 +2,15 @@ name: "Spice Labs Surveyor"
 description: "Runs The Spice Labs Surveyor to survey files and upload results."
 
 inputs:
-  file_path:
-    description: "Path to local files to survey (deprecated, use 'input' instead)"
-    required: false
-    default: "."
+  subject:
+    description: "Label identifying the system being surveyed (shown on the dashboard)"
+    required: true
   input:
     description: "Path to local files to survey"
     required: false
     default: "."
   spice_pass:
     description: "Spice Pass token"
-    required: true
-  tag:
-    description: "Tag to associate with the survey"
     required: true
   cli_image:
     description: "Docker image for the CLI"
@@ -24,6 +20,10 @@ inputs:
     description: "Docker image tag for the CLI"
     required: false
     default: "latest"
+  log_level:
+    description: "Log level: debug|info|warn|error"
+    required: false
+    default: "info"
 
 runs:
   using: "composite"
@@ -39,10 +39,4 @@ runs:
         export SPICE_IMAGE="${{ inputs.cli_image }}"
         export SPICE_IMAGE_TAG="${{ inputs.cli_image_tag }}"
 
-        # Prefer 'input'; if empty, fall back to deprecated 'file_path'
-        INPUT_PATH="${{ inputs.input }}"
-        if [ -z "$INPUT_PATH" ]; then
-          INPUT_PATH="${{ inputs.file_path }}"
-        fi
-        
-        ~/.local/bin/spice --input="$INPUT_PATH" --tag="${{ inputs.tag }}" --log-level=all
+        ~/.local/bin/spice survey inventory "${{ inputs.subject }}" "${{ inputs.input }}" --log-level="${{ inputs.log_level }}"
