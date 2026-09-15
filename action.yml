@@ -6,9 +6,13 @@ inputs:
     description: "Label identifying the system being surveyed (shown on the dashboard)"
     required: true
   input:
-    description: "Path to local files to survey"
+    description: "Path to local files to survey (ignored when `image` is set)"
     required: false
     default: "."
+  image:
+    description: "OCI/Docker registry image reference to survey (instead of local files), e.g. `ghcr.io/org/app:v1`. Requires spice-labs-cli v1.7.0+ (see README)."
+    required: false
+    default: ""
   spice_pass:
     description: "Spice Pass token"
     required: true
@@ -35,8 +39,14 @@ runs:
     - name: Run Spice Labs Surveyor
       shell: bash
       run: |
+        set -e
         export SPICE_PASS="${{ inputs.spice_pass }}"
         export SPICE_IMAGE="${{ inputs.cli_image }}"
         export SPICE_IMAGE_TAG="${{ inputs.cli_image_tag }}"
+        IMG="${{ inputs.image }}"
 
-        ~/.local/bin/spice survey inventory "${{ inputs.subject }}" "${{ inputs.input }}" --log-level="${{ inputs.log_level }}"
+        if [ -n "$IMG" ]; then
+          ~/.local/bin/spice survey image "$IMG" --subject "${{ inputs.subject }}" --log-level="${{ inputs.log_level }}"
+        else
+          ~/.local/bin/spice survey inventory "${{ inputs.subject }}" "${{ inputs.input }}" --log-level="${{ inputs.log_level }}"
+        fi
