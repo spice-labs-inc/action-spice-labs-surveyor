@@ -3,14 +3,15 @@ description: "Runs The Spice Labs Surveyor to survey files and upload results."
 
 inputs:
   subject:
-    description: "Label identifying the system being surveyed (shown on the dashboard)"
-    required: true
+    description: "Label identifying the system being surveyed (shown on the dashboard). Required for local files; for an image it defaults to the image name without its tag"
+    required: false
+    default: ""
   input:
     description: "Path to local files to survey (ignored when `image` is set)"
     required: false
     default: "."
   image:
-    description: "OCI/Docker registry image reference to survey (instead of local files), e.g. `ghcr.io/org/app:v1`. Requires spice-labs-cli v1.7.0+ (see README)."
+    description: "OCI/Docker registry image reference to survey (instead of local files), e.g. `ghcr.io/org/app:v1`. Requires a Surveyor CLI release with docker:// inputs (see README)."
     required: false
     default: ""
   spice_pass:
@@ -44,9 +45,18 @@ runs:
         export SPICE_IMAGE="${{ inputs.cli_image }}"
         export SPICE_IMAGE_TAG="${{ inputs.cli_image_tag }}"
         IMG="${{ inputs.image }}"
+        SUBJECT="${{ inputs.subject }}"
 
         if [ -n "$IMG" ]; then
-          ~/.local/bin/spice survey image "$IMG" --subject "${{ inputs.subject }}" --log-level="${{ inputs.log_level }}"
+          case "$IMG" in
+            docker://*|oci://*) ;;
+            *) IMG="docker://$IMG" ;;
+          esac
+          ~/.local/bin/spice survey inventory ${SUBJECT:+"$SUBJECT"} "$IMG" --log-level="${{ inputs.log_level }}"
         else
-          ~/.local/bin/spice survey inventory "${{ inputs.subject }}" "${{ inputs.input }}" --log-level="${{ inputs.log_level }}"
+          if [ -z "$SUBJECT" ]; then
+            echo "::error::subject is required when surveying local files"
+            exit 1
+          fi
+          ~/.local/bin/spice survey inventory "$SUBJECT" "${{ inputs.input }}" --log-level="${{ inputs.log_level }}"
         fi

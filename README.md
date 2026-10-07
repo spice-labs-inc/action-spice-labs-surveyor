@@ -2,7 +2,7 @@
 
 A composite GitHub Action that runs the Spice Labs Surveyor CLI to create an Artifact Dependency Graph (ADG) from a directory of built files (e.g., Rust binaries, OCI layout (unpacked) Docker images, JAR files), then uploads the resulting ADG to the Spice Labs servers.
 
-It also supports **image mode**: survey an image from an OCI/Docker registry directly, no local files required. The CLI's `spice survey image` command pulls the image and surveys the pulled OCI layout.
+It also supports **image mode**: survey an image from an OCI/Docker registry directly, no local files required. The action runs `spice survey inventory` with a `docker://` image, which pulls the image and surveys its contents.
 
 ---
 
@@ -22,19 +22,21 @@ Artifact files:
 - name: Build ADG
   uses: spice-labs-inc/action-spice-labs-surveyor@v5
   with:
-    subject: my-app                           # Required — label shown on the dashboard
+    subject: my-app                           # Required for local files: label shown on the dashboard
     input: target/release/                    # Optional; defaults to '.'
     spice_pass: ${{ secrets.SPICE_PASS }}     # Required
 ```
 
-When `image` is set, the action surveys that image instead of local files (the `input` directory is ignored). The CLI expands bare references to their fully-qualified form (`nginx` → `docker.io/library/nginx:latest`, `user/app:tag` → `docker.io/user/app:tag`), pulls the image into an OCI layout with the `oras` baked into the CLI's container image, and surveys the layer blobs.
+When `image` is set, the action surveys that image instead of local files (the `input` directory is ignored). It runs `spice survey inventory [subject] docker://<image>`; an `image` that already starts with `docker://` or `oci://` is passed as is. The CLI expands bare references to their fully-qualified form (`nginx` → `docker.io/library/nginx:latest`, `user/app:tag` → `docker.io/user/app:tag`), pulls the image with the `oras` baked into the CLI's container image, and surveys its contents.
+
+Without `subject`, the survey is labeled with the image name without its tag or digest (`ghcr.io/org/app:v1` → `ghcr.io/org/app`, `nginx:1.27` → `nginx`), so every version of the image lands on one subject.
 
 
 ```yaml
 - name: Build ADG
   uses: spice-labs-inc/action-spice-labs-surveyor@v5
   with:
-    subject: imagename                        # Optional: defaults to image
+    subject: imagename                        # Optional: defaults to the image name without its tag
     image: mycompany/imagename:tag            # Required
     spice_pass: ${{ secrets.SPICE_PASS }}     # Required
 ```
@@ -55,7 +57,7 @@ When `image` is set, the action surveys that image instead of local files (the `
 
 ---
 
-For a private registry, log into it in a prior step (e.g. `docker/login-action`, which writes the runner's `~/.docker/config.json`); the action mounts that docker config read-only into the CLI container, so any registry the runner is already logged into just works. With no docker config on the runner, the pull is anonymous.
+For a private registry, log into it in a prior step (e.g. `docker/login-action`, which writes the runner's `~/.docker/config.json`); the CLI mounts that docker config read-only into its container, so any registry the runner is already logged into just works. A login kept in a credential helper is read for that one registry. With no docker config on the runner, the pull is anonymous.
 
 ```yaml
 - name: Log in to GHCR
@@ -79,7 +81,7 @@ For a private registry, log into it in a prior step (e.g. `docker/login-action`,
 
 | Name | Required | Default | Description |
 |------|----------|---------|-------------|
-| `subject` | Yes | *(none)* | Label identifying the system being surveyed (shown on the dashboard) |
+| `subject` | For local files | *(none)* | Label identifying the system being surveyed (shown on the dashboard). For an image it defaults to the image name without its tag or digest |
 | `input` | No | `.` | Path to local files to survey (ignored when `image` is set) |
 | `image` | No | *(none)* | OCI/Docker registry image to survey instead of local files, e.g. `ghcr.io/org/app:v1` (bare names like `nginx` are expanded by the CLI). Private registries work via the runner's docker login (e.g. `docker/login-action`) |
 | `spice_pass` | Yes | *(none)* | Spice Pass (JWT) from your Spice Labs project |
@@ -93,4 +95,4 @@ For a private registry, log into it in a prior step (e.g. `docker/login-action`,
 
 - Docker must be available in the GitHub Actions runner.
 - `spicelabs/spice-labs-cli` image must be publicly accessible.
-- Image mode requires spice-labs-cli **v1.7.0+** (the `oras` binary and `spice survey image` command are baked into the CLI image since then).
+- Image mode requires a Surveyor CLI release with `docker://` inputs for `spice survey inventory`. Older CLI images only have `spice survey image`.
