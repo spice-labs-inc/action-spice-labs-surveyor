@@ -15,16 +15,16 @@ inputs:
     required: false
     default: ""
   spice_pass:
-    description: "Spice Pass token"
+    description: "Spice Pass token, passed from a secret. The action stops at its first step when it is empty"
     required: true
   cli_image:
-    description: "Docker image for the CLI"
+    description: "Docker image for the CLI; add a tag or digest to pin it, e.g. `spicelabs/spice-labs-cli:1.9.3`"
     required: false
     default: "spicelabs/spice-labs-cli"
   cli_image_tag:
-    description: "Docker image tag for the CLI"
+    description: "A tag added to `cli_image` when it has no tag or digest, e.g. `1.9.3`. Ignored, with a warning, when `cli_image` already has a tag or digest"
     required: false
-    default: "latest"
+    default: ""
   log_level:
     description: "Log level: debug|info|warn|error"
     required: false
@@ -33,6 +33,27 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Check inputs
+      id: check
+      shell: bash
+      env:
+        HAS_SPICE_PASS: ${{ inputs.spice_pass != '' }}
+        CLI_IMAGE: ${{ inputs.cli_image }}
+        CLI_IMAGE_TAG: ${{ inputs.cli_image_tag }}
+      run: |
+        if [ "$HAS_SPICE_PASS" != "true" ]; then
+          echo "::error title=spice_pass is empty::The spice_pass input is required but is empty. Pass a Spice Pass from a repository secret, and check that the secret exists and this workflow can read it. To create a Spice Pass, see https://docs.spicelabs.io/docs/topographer/credentials/#generate-a-spice-pass"
+          exit 1
+        fi
+        spice_image="$CLI_IMAGE"
+        if [ -n "$CLI_IMAGE" ] && [ -n "$CLI_IMAGE_TAG" ]; then
+          # Only the last path segment can hold a tag: a registry host may carry a port.
+          case "${CLI_IMAGE##*/}" in
+            *:*|*@*) echo "::warning title=cli_image_tag ignored::cli_image ($CLI_IMAGE) already has a tag or digest, so cli_image_tag ($CLI_IMAGE_TAG) was ignored" ;;
+            *) spice_image="$CLI_IMAGE:$CLI_IMAGE_TAG" ;;
+          esac
+        fi
+        echo "spice_image=$spice_image" >> "$GITHUB_OUTPUT"
     - name: Install Spice Labs Surveyor CLI
       shell: bash
       run: |
@@ -42,7 +63,7 @@ runs:
       run: |
         set -e
         export SPICE_PASS="${{ inputs.spice_pass }}"
-        export SPICE_IMAGE="${{ inputs.cli_image }}"
+        export SPICE_IMAGE="${{ steps.check.outputs.spice_image }}"
         export SPICE_IMAGE_TAG="${{ inputs.cli_image_tag }}"
         IMG="${{ inputs.image }}"
         SUBJECT="${{ inputs.subject }}"
