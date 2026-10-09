@@ -18,11 +18,11 @@ inputs:
     description: "Spice Pass token, passed from a secret. The action stops at its first step when it is empty"
     required: true
   cli_image:
-    description: "Docker image for the CLI"
+    description: "Docker image for the CLI; add a tag or digest to pin it, e.g. `spicelabs/spice-labs-cli:1.9.3`"
     required: false
     default: "spicelabs/spice-labs-cli"
   cli_image_tag:
-    description: "Tag added to `cli_image` when it has no tag or digest, e.g. `1.9.3`. Without it the image's `latest` runs. Ignored, with a warning, when `cli_image` already has a tag or digest"
+    description: "Kept for existing workflows: a tag added to `cli_image` when it has no tag or digest. Prefer putting the tag in `cli_image`. Ignored, with a warning, when `cli_image` already has a tag or digest"
     required: false
     default: ""
   log_level:
