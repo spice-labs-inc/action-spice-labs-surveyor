@@ -45,14 +45,23 @@ Without `subject`, the survey is labeled with the image name without its tag or 
 
 ### Optional: pin or override the CLI image
 
+By default the action runs the `latest` CLI image. To pin the CLI version, set `cli_image_tag`:
+
 ```yaml
-- name: Build ADG (pinned CLI image)
+- name: Build ADG (pinned CLI version)
   uses: spice-labs-inc/action-spice-labs-surveyor@v5
   with:
     subject: wasabi
     input: ${{ github.workspace }}/target
     spice_pass: ${{ secrets.SPICE_PASS }}
-    cli_image: spicelabs/spice-labs-cli:2.0.0   # tag embedded — the wrapper uses SPICE_IMAGE verbatim
+    cli_image_tag: 1.9.3                      # runs spicelabs/spice-labs-cli:1.9.3
+```
+
+To run the CLI from another image, such as a copy in your own registry, set `cli_image`. `cli_image_tag` is added to it when it has no tag or digest. When `cli_image` already has a tag or digest, that wins: the action warns that `cli_image_tag` was ignored and runs `cli_image` as given.
+
+```yaml
+    cli_image: registry.example.com/mirror/spice-labs-cli
+    cli_image_tag: 1.9.3                      # runs registry.example.com/mirror/spice-labs-cli:1.9.3
 ```
 
 ---
@@ -84,9 +93,9 @@ For a private registry, log into it in a prior step (e.g. `docker/login-action`,
 | `subject` | For local files | *(none)* | Label identifying the system being surveyed (shown on the dashboard). For an image it defaults to the image name without its tag or digest |
 | `input` | No | `.` | Path to local files to survey (ignored when `image` is set) |
 | `image` | No | *(none)* | OCI/Docker registry image to survey instead of local files, e.g. `ghcr.io/org/app:v1` (bare names like `nginx` are expanded by the CLI). Private registries work via the runner's docker login (e.g. `docker/login-action`) |
-| `spice_pass` | Yes | *(none)* | Spice Pass (JWT) from your Spice Labs project |
-| `cli_image` | No | `spicelabs/spice-labs-cli` | Docker image to run the CLI |
-| `cli_image_tag` | No | `latest` | Tag of the Docker image to run the CLI |
+| `spice_pass` | Yes | *(none)* | Spice Pass (JWT) from your Spice Labs project, passed from a secret. When it is empty (for example, the secret is missing or this workflow cannot read it), the action stops at its first step with an error naming `spice_pass`. See [Generate a Spice Pass](https://docs.spicelabs.io/docs/topographer/credentials/#generate-a-spice-pass) |
+| `cli_image` | No | `spicelabs/spice-labs-cli` | Docker image to run the CLI. A tag or digest in it (`spicelabs/spice-labs-cli:1.9.3`) takes precedence over `cli_image_tag` |
+| `cli_image_tag` | No | *(none)* | Tag added to `cli_image` when it has no tag or digest, e.g. `1.9.3`; without it the `latest` image runs. Ignored, with a warning, when `cli_image` already has a tag or digest |
 | `log_level` | No | `info` | Log level: `debug` \| `info` \| `warn` \| `error` |
 
 ---
