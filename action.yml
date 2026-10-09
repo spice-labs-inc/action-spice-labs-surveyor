@@ -22,7 +22,7 @@ inputs:
     required: false
     default: "spicelabs/spice-labs-cli"
   cli_image_tag:
-    description: "Kept for existing workflows: a tag added to `cli_image` when it has no tag or digest. Prefer putting the tag in `cli_image`. Ignored, with a warning, when `cli_image` already has a tag or digest"
+    description: "A tag added to `cli_image` when it has no tag or digest, e.g. `1.9.3`. Ignored, with a warning, when `cli_image` already has a tag or digest"
     required: false
     default: ""
   log_level:

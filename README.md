@@ -63,7 +63,7 @@ To run the CLI from another image, such as a copy in your own registry, name tha
     cli_image: registry.example.com/mirror/spice-labs-cli:1.9.3
 ```
 
-Workflows that already set `cli_image_tag` keep working: it is added to `cli_image` when that has no tag or digest, and ignored with a warning when it has one.
+`cli_image_tag` adds a tag to `cli_image` when it has none; a tag or digest in `cli_image` wins, with a warning.
 
 ---
 
@@ -96,7 +96,7 @@ For a private registry, log into it in a prior step (e.g. `docker/login-action`,
 | `image` | No | *(none)* | OCI/Docker registry image to survey instead of local files, e.g. `ghcr.io/org/app:v1` (bare names like `nginx` are expanded by the CLI). Private registries work via the runner's docker login (e.g. `docker/login-action`) |
 | `spice_pass` | Yes | *(none)* | Spice Pass (JWT) from your Spice Labs project, passed from a secret. When it is empty (for example, the secret is missing or this workflow cannot read it), the action stops at its first step with an error naming `spice_pass`. See [Generate a Spice Pass](https://docs.spicelabs.io/docs/topographer/credentials/#generate-a-spice-pass) |
 | `cli_image` | No | `spicelabs/spice-labs-cli` | Docker image to run the CLI, with a tag or digest to pin it, e.g. `spicelabs/spice-labs-cli:1.9.3` |
-| `cli_image_tag` | No | *(none)* | Kept for existing workflows: a tag added to `cli_image` when it has no tag or digest. Prefer putting the tag in `cli_image` |
+| `cli_image_tag` | No | *(none)* | A tag added to `cli_image` when it has no tag or digest, e.g. `1.9.3` |
 | `log_level` | No | `info` | Log level: `debug` \| `info` \| `warn` \| `error` |
 
 ---
